@@ -1,915 +1,530 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
-/* ============================================
-   SVG ICON COMPONENTS
-   ============================================ */
+/* ── SVG ICONS ── */
+const PhoneIcon = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>);
+const Tick = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>);
+const Chev = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>);
+const XIcon = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>);
+const WA = () => (<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>);
+const MapPin = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>);
+const BookOpen = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg>);
+const Megaphone = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 11-5.8-1.6" /></svg>);
+const TruckIcon = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>);
 
-const CheckIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-
-const ArrowRight = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
-  </svg>
-);
-
-const PhoneIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-  </svg>
-);
-
-const ShieldIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-  </svg>
-);
-
-const TrendingUpIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
-  </svg>
-);
-
-const AwardIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
-  </svg>
-);
-
-const UsersIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-  </svg>
-);
-
-const DollarIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-  </svg>
-);
-
-const ClockIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-  </svg>
-);
-
-const BarChartIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="20" x2="12" y2="10" /><line x1="18" y1="20" x2="18" y2="4" /><line x1="6" y1="20" x2="6" y2="16" />
-  </svg>
-);
-
-const MapPinIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-  </svg>
-);
-
-const BookOpenIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-  </svg>
-);
-
-const MegaphoneIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 11l18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
-  </svg>
-);
-
-const TruckIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
-  </svg>
-);
-
-const StarIcon = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
-);
-
-const XIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-
-const WhatsAppIcon = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-  </svg>
-);
-
-const AlertTriangleIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
-  </svg>
-);
-
-const LockIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
-  </svg>
-);
-
-const IndianRupeeIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6 3h12" /><path d="M6 8h12" /><path d="M6 13l8.5 8" /><path d="M6 13h2a4 4 0 0 0 0-10H6" />
-  </svg>
-);
-
-const ChevronDownIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="6 9 12 15 18 9" />
-  </svg>
-);
-
-const HelpCircleIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
-  </svg>
-);
-
-
-/* ============================================
-   FAQ ITEM COMPONENT
-   ============================================ */
-function FaqItem({ question, answer }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className={`faq-item ${isOpen ? 'open' : ''}`}>
-      <button
-        className="faq-question"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
-      >
-        <span>{question}</span>
-        <span className="faq-chevron"><ChevronDownIcon /></span>
-      </button>
-      <div className="faq-answer">
-        <p>{answer}</p>
-      </div>
-    </div>
-  );
+/* ── HOOKS ── */
+function useReveal(dir = 'up') {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { el.classList.add('vis'); io.unobserve(el); } },
+      { threshold: 0.1 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return ref;
 }
 
+function R({ children, className = '', dir = 'up', style, tag: Tag = 'div' }) {
+  const ref = useReveal(dir);
+  const cls = dir === 'left' ? 'rv-left' : dir === 'right' ? 'rv-right' : 'rv';
+  return <Tag ref={ref} className={`${cls} ${className}`} style={style}>{children}</Tag>;
+}
 
-/* ============================================
-   INQUIRY FORM COMPONENT
-   ============================================ */
-function InquiryForm({ variant = 'default', onSuccess }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    city: '',
-    budget: ''
-  });
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+function CountUp({ end, suffix = '', duration = 1600 }) {
+  const [v, setV] = useState(0);
+  const ref = useRef(null);
+  const ran = useRef(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !ran.current) {
+        ran.current = true;
+        const s = performance.now();
+        const tick = (now) => {
+          const p = Math.min((now - s) / duration, 1);
+          setV(Math.round((1 - Math.pow(1 - p, 3)) * end));
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+        io.unobserve(el);
+      }
+    }, { threshold: 0.3 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [end, duration]);
+  return <span ref={ref}>{v.toLocaleString()}{suffix}</span>;
+}
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+/* ── FORM ── */
+function InquiryForm({ mini = false, onDone }) {
+  const [d, setD] = useState({ name: '', phone: '', city: '', budget: '' });
+  const [ok, setOk] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const up = (e) => setD({ ...d, [e.target.name]: e.target.value });
+  const go = (e) => { e.preventDefault(); setBusy(true); setTimeout(() => { setBusy(false); setOk(true); if (onDone) onDone(); }, 1100); };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    // Simulate submission
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-      if (onSuccess) onSuccess();
-    }, 1200);
-  };
-
-  if (submitted) {
-    return (
-      <div className="form-success">
-        <div className="form-success-icon">
-          <CheckIcon />
-        </div>
-        <h4>Thank You!</h4>
-        <p>Our franchise team will contact you within 24 hours with complete details.</p>
-      </div>
-    );
-  }
-
-  const isPopup = variant === 'popup';
+  if (ok) return (<div className="form-done"><Tick /><h4>Thank You</h4><p>Our franchise team will contact you within 24 hours.</p></div>);
 
   return (
-    <form onSubmit={handleSubmit} id={isPopup ? 'popup-inquiry-form' : 'inquiry-form'}>
-      <div className="form-group">
-        <label htmlFor={isPopup ? 'popup-name' : 'name'}>Full Name</label>
-        <input
-          type="text"
-          id={isPopup ? 'popup-name' : 'name'}
-          name="name"
-          placeholder="Enter your full name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor={isPopup ? 'popup-phone' : 'phone'}>Phone Number</label>
-        <input
-          type="tel"
-          id={isPopup ? 'popup-phone' : 'phone'}
-          name="phone"
-          placeholder="Enter your phone number"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-          pattern="[0-9]{10}"
-          title="Please enter a valid 10-digit phone number"
-        />
-      </div>
-      {!isPopup && (
-        <>
-          <div className="form-group">
-            <label htmlFor="city">City</label>
-            <input
-              type="text"
-              id="city"
-              name="city"
-              placeholder="Your preferred city"
-              value={formData.city}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="budget">Investment Budget</label>
-            <select
-              id="budget"
-              name="budget"
-              value={formData.budget}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select your budget</option>
-              <option value="5-10">₹5 Lakh – ₹10 Lakh</option>
-              <option value="10-15">₹10 Lakh – ₹15 Lakh</option>
-              <option value="15-20">₹15 Lakh – ₹20 Lakh</option>
-              <option value="20+">₹20 Lakh+</option>
-            </select>
-          </div>
-        </>
-      )}
-      <button
-        type="submit"
-        className="form-submit-btn"
-        disabled={loading}
-        id={isPopup ? 'popup-submit-btn' : 'hero-submit-btn'}
-      >
-        {loading ? 'Submitting...' : isPopup ? 'Send Me Details' : 'Get Franchise Details Now'}
-      </button>
-      {!isPopup && (
-        <div className="form-reassurance">
-          <div className="form-reassurance-item">
-            <span className="check-icon-sm"><CheckIcon /></span>
-            No prior bakery experience required
-          </div>
-          <div className="form-reassurance-item">
-            <span className="check-icon-sm"><CheckIcon /></span>
-            Quick response within 24 hours
-          </div>
-          <div className="form-reassurance-item">
-            <span className="check-icon-sm"><CheckIcon /></span>
-            100% confidential inquiry
-          </div>
+    <form onSubmit={go}>
+      <div className="fl"><input type="text" name="name" placeholder=" " value={d.name} onChange={up} required /><label>Full Name</label></div>
+      <div className="fl"><input type="tel" name="phone" placeholder=" " value={d.phone} onChange={up} required pattern="[0-9]{10}" /><label>Phone Number</label></div>
+      {!mini && <>
+        <div className="fl"><input type="text" name="city" placeholder=" " value={d.city} onChange={up} required /><label>City</label></div>
+        <div className={`fl${d.budget ? ' has-val' : ''}`}>
+          <select name="budget" value={d.budget} onChange={up} required>
+            <option value=""></option>
+            <option value="5-10">₹5L – ₹10L</option>
+            <option value="10-15">₹10L – ₹15L</option>
+            <option value="15-20">₹15L – ₹20L</option>
+            <option value="20+">₹20L+</option>
+          </select>
+          <label>Investment Budget</label>
         </div>
-      )}
-      {isPopup && (
-        <div className="form-trust">
-          <LockIcon />
-          <span>Your information is secure and confidential</span>
-        </div>
-      )}
+      </>}
+      <button type="submit" className="form-go" disabled={busy}>{busy ? 'Submitting…' : mini ? 'Send Me Details' : 'Download Details'}</button>
+      {!mini && <div className="form-notes">
+        <span><Tick /> No bakery experience required</span>
+        <span><Tick /> Response within 24 hours</span>
+        <span><Tick /> 100% confidential</span>
+      </div>}
+      {!mini && <p className="form-bottom-note">Our team contacts shortlisted applicants within 24 hours.</p>}
     </form>
   );
 }
 
+/* ── FAQ ── */
+function FaqItem({ q, a }) {
+  const [o, setO] = useState(false);
+  return (
+    <div className={`faq-item${o ? ' open' : ''}`}>
+      <button className="faq-q" onClick={() => setO(!o)}><span>{q}</span><span className="faq-chev"><Chev /></span></button>
+      <div className="faq-a"><p>{a}</p></div>
+    </div>
+  );
+}
 
-/* ============================================
-   MAIN APP COMPONENT
-   ============================================ */
-function App() {
-  const [showStickyBar, setShowStickyBar] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupShown, setPopupShown] = useState(false);
-  const heroFormRef = useRef(null);
+/* ── TYPEWRITER ── */
+function Typewriter({ text, speed = 55, delay = 500 }) {
+  const [shown, setShown] = useState('');
+  const [started, setStarted] = useState(false);
 
-  // Sticky bar visibility on scroll
+  const [done, setDone] = useState(false);
+
   useEffect(() => {
-    const handleScroll = () => {
-      setShowStickyBar(window.scrollY > 700);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    setShown('');
+    setStarted(false);
+    setDone(false);
+    const delayTimer = setTimeout(() => setStarted(true), delay);
+    return () => clearTimeout(delayTimer);
+  }, [text, delay]);
+
+  useEffect(() => {
+    if (!started) return;
+    if (shown.length >= text.length) {
+      setDone(true);
+      return;
+    }
+    const t = setTimeout(() => setShown(text.slice(0, shown.length + 1)), speed);
+    return () => clearTimeout(t);
+  }, [shown, started, text, speed]);
+
+  return <span className={`typewriter${done ? ' done' : ''}`}>{shown}</span>;
+}
+
+/* ── HERO SLIDES ── */
+const SLIDES = ['/images/storefront2.jpg', '/images/storefront.jpg'];
+
+/* =====================================
+   APP
+   ===================================== */
+export default function App() {
+  const [slide, setSlide] = useState(0);
+  const [sticky, setSticky] = useState(false);
+  const [popup, setPopup] = useState(false);
+  const [popDone, setPopDone] = useState(false);
+  const formRef = useRef(null);
+
+  const goForm = useCallback(() => {
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, []);
 
-  // Exit intent popup
+  // Auto slider — 6 second interval
+  const [progressKey, setProgressKey] = useState(0);
   useEffect(() => {
-    const handleMouseLeave = (e) => {
-      if (e.clientY <= 0 && !popupShown) {
-        setShowPopup(true);
-        setPopupShown(true);
-      }
-    };
-    document.addEventListener('mouseleave', handleMouseLeave);
-    return () => document.removeEventListener('mouseleave', handleMouseLeave);
-  }, [popupShown]);
+    const t = setInterval(() => {
+      setSlide((s) => (s + 1) % SLIDES.length);
+      setProgressKey((k) => k + 1);
+    }, 6000);
+    return () => clearInterval(t);
+  }, []);
 
-  const scrollToForm = () => {
-    if (heroFormRef.current) {
-      heroFormRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+  const manualSlide = (i) => {
+    setSlide(i);
+    setProgressKey((k) => k + 1);
   };
+
+  // Scroll indicator visibility
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const fn = () => {
+      setSticky(window.scrollY > 700);
+      setScrolled(window.scrollY > 80);
+    };
+    window.addEventListener('scroll', fn, { passive: true });
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
+
+  // Exit intent
+  useEffect(() => {
+    const fn = (e) => { if (e.clientY <= 0 && !popDone) { setPopup(true); setPopDone(true); } };
+    document.addEventListener('mouseleave', fn);
+    return () => document.removeEventListener('mouseleave', fn);
+  }, [popDone]);
 
   return (
     <>
-      {/* ====== HEADER ====== */}
-      <header className="header" id="header">
-        <div className="header-inner">
-          <a href="#" className="header-logo" id="header-logo">
-            <img src="/images/logo.png" alt="Monginis" />
-          </a>
-          <div className="header-cta">
-            <a href="tel:+919999999999" className="header-phone" id="header-phone">
-              <PhoneIcon />
-              <span>Call Now</span>
-            </a>
-          </div>
+      {/* HEADER */}
+      <header className="header">
+        <div className="header-in">
+          <a href="#" className="header-logo"><img src="/images/logo.png" alt="Monginis" /></a>
+          <a href="tel:+919999999999" className="header-phone"><PhoneIcon /><span>Call Now</span></a>
         </div>
       </header>
 
-      {/* ====== HERO SECTION ====== */}
-      <section className="hero" id="hero-section">
-        <div className="hero-bg">
-          <img src="/images/storefront2.jpg" alt="Monginis Store" />
+      {/* HERO SLIDER */}
+      <section className="hero" id="hero">
+        <div className="hero-slides">
+          {SLIDES.map((src, i) => (
+            <div className={`hero-slide${i === slide ? ' active' : ''}`} key={i}>
+              <img src={src} alt={`Monginis ${i + 1}`} />
+            </div>
+          ))}
         </div>
-        <div className="hero-content">
-          <div className="hero-left">
-            <div className="hero-badge">
-              <AwardIcon />
-              India's Most Trusted Bakery Brand
-            </div>
-            <h1 className="hero-title heading-display">
-              Start Your Own Profitable <span className="highlight">Monginis Franchise</span> — Backed by 65+ Years of Brand Trust
-            </h1>
-            <p className="hero-subtitle">
-              India's most recognized bakery brand with a proven franchise model. Low investment, daily demand for bakery products, and complete business support from day one.
-            </p>
-            <ul className="hero-benefits">
-              <li>
-                <span className="check-icon"><CheckIcon /></span>
-                Trusted Brand Since 1956 — Household Name Across India
-              </li>
-              <li>
-                <span className="check-icon"><CheckIcon /></span>
-                20+ Million Customers Served Every Year
-              </li>
-              <li>
-                <span className="check-icon"><CheckIcon /></span>
-                Complete Training, Marketing & Operations Support
-              </li>
-            </ul>
-            <div className="hero-cta-row">
-              <button className="btn-primary btn-primary-large" onClick={scrollToForm} id="hero-cta-btn">
-                Apply for Franchise <ArrowRight />
-              </button>
-            </div>
-            <div className="hero-stats">
-              <div className="hero-stat">
-                <div className="hero-stat-value">700+</div>
-                <div className="hero-stat-label">Cities</div>
-              </div>
-              <div className="hero-stat">
-                <div className="hero-stat-value">18,000+</div>
-                <div className="hero-stat-label">Pin Codes</div>
-              </div>
-              <div className="hero-stat">
-                <div className="hero-stat-value">20M+</div>
-                <div className="hero-stat-label">Customers</div>
-              </div>
-              <div className="hero-stat">
-                <div className="hero-stat-value">65+</div>
-                <div className="hero-stat-label">Years Legacy</div>
-              </div>
-            </div>
-          </div>
+        <div className="hero-overlay" />
 
-          <div className="hero-right" ref={heroFormRef}>
-            <div className="hero-form-card" id="hero-form-card">
-              <div className="form-header">
-                <h3>Get Franchise Details</h3>
-                <p>Fill the form and our team will reach out within 24 hours</p>
-              </div>
-              <InquiryForm />
+        {/* SLIDE 1 TEXT — Business / Authority */}
+        <div className={`slide slide-1${slide === 0 ? ' active' : ''}`}>
+          <p className="slide-1-tag s1-anim-1">Franchise Opportunity</p>
+          <h1 className="slide-1-heading s1-anim-2">Own a <span className="underline-word">Monginis</span> Franchise</h1>
+          <p className="slide-1-heading-alt s1-anim-3">In Your City</p>
+          <p className="slide-1-sub s1-anim-4">65+ Years Legacy Brand With Proven Profit Model</p>
+          <div className="hero-btn-row s1-anim-5">
+            <button className="btn btn-pink btn-lg" onClick={goForm}>Apply for Franchise</button>
+          </div>
+        </div>
+
+        {/* SLIDE 2 TEXT — Emotional / Brand */}
+        <div className={`slide slide-2${slide === 1 ? ' active' : ''}`}>
+          <p className="slide-2-script-tag s2-anim-1">A Legacy of Sweet Moments</p>
+          <div className="slide-2-heading-block s2-anim-2">
+            <h2 className="slide-2-heading">
+              From Birthdays To Everyday Treats,<br />
+              We Bring You
+            </h2>
+            <div className="slide-2-type-wrap">
+              {slide === 1 && <Typewriter text="Freshly Baked Delights" speed={55} delay={800} />}
             </div>
+            <p className="slide-2-sub">Join India's trusted bakery network serving millions every year.</p>
+          </div>
+          <div className="hero-btn-row s2-anim-3">
+            <button className="btn btn-pink btn-lg" onClick={goForm}>Explore Franchise Opportunity</button>
+          </div>
+        </div>
+
+        {/* NAV: Dots + Progress */}
+        <div className="hero-nav">
+          <div className="hero-dots">
+            {SLIDES.map((_, i) => (
+              <button key={i} className={`hero-dot${i === slide ? ' active' : ''}`} onClick={() => manualSlide(i)} aria-label={`Slide ${i + 1}`} />
+            ))}
+          </div>
+          <div className="hero-progress">
+            <div className="hero-progress-bar" key={progressKey} />
+          </div>
+        </div>
+
+        {/* SCROLL INDICATOR */}
+        <div className={`scroll-hint${scrolled ? ' hidden' : ''}`}>
+          <span>Scroll</span>
+          <div className="scroll-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
           </div>
         </div>
       </section>
 
-      {/* ====== TRUST BAR ====== */}
-      <section className="trust-bar" id="trust-bar">
-        <div className="container">
-          <div className="trust-bar-inner">
-            <div className="trust-item">
-              <div className="trust-item-icon">
-                <img src="/images/icon1.png" alt="Safe & Hygienic" />
-              </div>
-              <div className="trust-item-text">
-                Safe & Hygienic
-                <span>Bakery Standards</span>
-              </div>
-            </div>
-            <div className="trust-item">
-              <div className="trust-item-icon">
-                <img src="/images/icon2.png" alt="700+ Cities" />
-              </div>
-              <div className="trust-item-text">
-                Delivery in 700+
-                <span>Cities Across India</span>
-              </div>
-            </div>
-            <div className="trust-item">
-              <div className="trust-item-icon">
-                <img src="/images/icon3.png" alt="Trusted by 20 Million" />
-              </div>
-              <div className="trust-item-text">
-                Trusted by 20
-                <span>Million Customers</span>
-              </div>
-            </div>
-            <div className="trust-item">
-              <div className="trust-item-icon">
-                <img src="/images/icon4.png" alt="18000+ Pincodes" />
-              </div>
-              <div className="trust-item-text">
-                Services in 18,000+
-                <span>Pincodes Nationwide</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== WHY INVEST SECTION ====== */}
-      <section className="section section-alt" id="why-invest">
-        <div className="container">
-          <div style={{ textAlign: 'center' }}>
-            <span className="section-label">Why Monginis?</span>
-            <h2 className="heading-section">Why Invest in Monginis Franchise?</h2>
-            <p className="section-desc" style={{ margin: '12px auto 0' }}>
-              A proven business model backed by decades of trust, consistent demand, and strong operational support.
-            </p>
-          </div>
-          <div className="why-invest-grid">
-            <div className="why-invest-card" id="card-low-investment">
-              <div className="why-invest-icon">
-                <IndianRupeeIcon />
-              </div>
-              <h4>Low Investment Model</h4>
-              <p>Start your bakery business with a manageable investment. Monginis offers one of the most affordable franchise models in India's food industry.</p>
-              <a href="#hero-form-card" className="card-apply-link" onClick={(e) => { e.preventDefault(); scrollToForm(); }}>
-                Apply Now <ArrowRight />
-              </a>
-            </div>
-            <div className="why-invest-card" id="card-high-profit">
-              <div className="why-invest-icon">
-                <TrendingUpIcon />
-              </div>
-              <h4>High Profit Potential</h4>
-              <p>Bakery products carry strong margins. Monginis' consistent demand and repeat customer base help you generate reliable revenue.</p>
-              <a href="#hero-form-card" className="card-apply-link" onClick={(e) => { e.preventDefault(); scrollToForm(); }}>
-                Apply Now <ArrowRight />
-              </a>
-            </div>
-            <div className="why-invest-card" id="card-brand">
-              <div className="why-invest-icon">
-                <AwardIcon />
-              </div>
-              <h4>Strong Brand Recognition</h4>
-              <p>With 65+ years of legacy and presence across 700+ cities, Monginis is a household name that customers already know and trust.</p>
-              <a href="#hero-form-card" className="card-apply-link" onClick={(e) => { e.preventDefault(); scrollToForm(); }}>
-                Apply Now <ArrowRight />
-              </a>
-            </div>
-            <div className="why-invest-card" id="card-support">
-              <div className="why-invest-icon">
-                <UsersIcon />
-              </div>
-              <h4>Complete Training & Support</h4>
-              <p>From site selection to staff training, marketing to daily operations — Monginis provides end-to-end support at every step.</p>
-              <a href="#hero-form-card" className="card-apply-link" onClick={(e) => { e.preventDefault(); scrollToForm(); }}>
-                Apply Now <ArrowRight />
-              </a>
-            </div>
-          </div>
-          <div className="section-cta-wrapper">
-            <button className="btn-primary" onClick={scrollToForm} id="why-invest-cta">
-              Start Your Franchise Application <ArrowRight />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== PRODUCT SHOWCASE ====== */}
-      <section className="section" id="products">
-        <div className="container">
-          <div style={{ textAlign: 'center' }}>
-            <span className="section-label">Our Products</span>
-            <h2 className="heading-section">Products Your Customers Will Love</h2>
-            <p className="section-desc" style={{ margin: '12px auto 0' }}>
-              Monginis offers a wide range of freshly baked products — from celebration cakes to everyday snacks — ensuring daily footfall and repeat business.
-            </p>
-          </div>
-          <div className="product-grid">
-            <div className="product-card" id="product-cakes">
-              <div className="product-card-image">
-                <img src="/images/cake.webp" alt="Monginis Cakes" />
-              </div>
-              <div className="product-card-body">
-                <h4>Cakes</h4>
-                <p>Freshly baked for birthdays, weddings, and celebrations</p>
-              </div>
-            </div>
-            <div className="product-card" id="product-snacks">
-              <div className="product-card-image">
-                <img src="/images/snacks.jpg" alt="Monginis Snacks" />
-              </div>
-              <div className="product-card-body">
-                <h4>Snacks</h4>
-                <p>Tasty puffs, quiches, sandwiches, and much more</p>
-              </div>
-            </div>
-            <div className="product-card" id="product-pastries">
-              <div className="product-card-image">
-                <img src="/images/pastries.png" alt="Monginis Pastries" />
-              </div>
-              <div className="product-card-body">
-                <h4>Pastries</h4>
-                <p>Delicious pastries in a variety of flavors for any time</p>
-              </div>
-            </div>
-            <div className="product-card" id="product-breads">
-              <div className="product-card-image">
-                <img src="/images/breads.jpg" alt="Monginis Breads & Buns" />
-              </div>
-              <div className="product-card-body">
-                <h4>Breads & Buns</h4>
-                <p>Soft and fluffy freshly baked breads, baked daily</p>
-              </div>
-            </div>
-            <div className="product-card" id="product-chocolates">
-              <div className="product-card-image">
-                <img src="/images/chocolates.jpg" alt="Monginis Chocolates & Desserts" />
-              </div>
-              <div className="product-card-body">
-                <h4>Chocolates & Desserts</h4>
-                <p>Rich chocolates, brownies, mousses, and sweet treats</p>
-              </div>
-            </div>
-            <div className="product-card" id="product-beverages">
-              <div className="product-card-image">
-                <img src="/images/beverages.jpg" alt="Monginis Beverages" />
-              </div>
-              <div className="product-card-body">
-                <h4>Beverages</h4>
-                <p>Refreshing coffees, shakes, and drinks to complement</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== WHY NOW MICRO SECTION ====== */}
-      <section className="why-now-section" id="why-now">
-        <div className="container">
-          <div className="why-now-content">
-            <p>India's organized bakery market continues to grow steadily.</p>
-            <p><strong>Partner with an established brand instead of starting from scratch.</strong></p>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== INVESTMENT & RETURNS ====== */}
-      <section className="section investment-section" id="investment">
-        <div className="container">
-          <div style={{ textAlign: 'center' }}>
-            <span className="section-label" style={{ color: 'rgba(255,255,255,0.5)' }}>Investment Details</span>
-            <h2 className="heading-section" style={{ color: '#fff' }}>Investment & Returns Overview</h2>
-            <p className="section-desc" style={{ margin: '12px auto 0', color: 'rgba(255,255,255,0.55)' }}>
-              Transparent investment structure with clear profitability expectations.
-            </p>
-          </div>
-          <div className="investment-grid">
-            <div className="investment-card" id="invest-amount">
-              <div className="investment-card-icon">
-                <DollarIcon />
-              </div>
-              <h4>Estimated Investment</h4>
-              <div className="value">₹10L – ₹20L</div>
-              <p>Includes setup, interiors, equipment, and initial inventory</p>
-            </div>
-            <div className="investment-card" id="invest-roi">
-              <div className="investment-card-icon">
-                <ClockIcon />
-              </div>
-              <h4>Expected ROI Timeline</h4>
-              <div className="value">12 – 18 Months</div>
-              <p>Recover your investment with consistent daily sales</p>
-            </div>
-            <div className="investment-card" id="invest-margin">
-              <div className="investment-card-icon">
-                <BarChartIcon />
-              </div>
-              <h4>Profit Margin Potential</h4>
-              <div className="value">25% – 40%</div>
-              <p>Strong margins on bakery products with repeat customers</p>
-            </div>
-          </div>
-          <div className="urgency-wrapper">
-            <div className="urgency-text">
-              <AlertTriangleIcon />
-              Limited Franchise Opportunities Available in Major Cities — Applications Reviewed on First-Come Basis
-            </div>
-          </div>
-          <div className="section-cta-wrapper">
-            <button className="btn-white" onClick={scrollToForm} id="investment-cta">
-              Check Availability in Your City <ArrowRight />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== FRANCHISE SUPPORT ====== */}
-      <section className="section" id="support">
-        <div className="container">
-          <div style={{ textAlign: 'center' }}>
-            <span className="section-label">Complete Support</span>
-            <h2 className="heading-section">We Support You at Every Step</h2>
-            <p className="section-desc" style={{ margin: '12px auto 0' }}>
-              When you partner with Monginis, you're never alone. From launch to daily operations, our team is with you.
-            </p>
-          </div>
-          <div className="support-grid">
-            <div className="support-card" id="support-site">
-              <div className="support-card-icon">
-                <MapPinIcon />
-              </div>
-              <div className="support-card-content">
-                <h4>Site Selection Assistance</h4>
-                <p>Our team helps you identify the ideal location based on foot traffic, demographics, and commercial viability to maximize your store's potential.</p>
-              </div>
-            </div>
-            <div className="support-card" id="support-training">
-              <div className="support-card-icon">
-                <BookOpenIcon />
-              </div>
-              <div className="support-card-content">
-                <h4>Staff Training Program</h4>
-                <p>Comprehensive training for you and your team covering product handling, customer service, hygiene protocols, and store management.</p>
-              </div>
-            </div>
-            <div className="support-card" id="support-marketing">
-              <div className="support-card-icon">
-                <MegaphoneIcon />
-              </div>
-              <div className="support-card-content">
-                <h4>Marketing Support</h4>
-                <p>Benefit from Monginis' national brand campaigns, local marketing materials, seasonal promotions, and digital marketing guidance.</p>
-              </div>
-            </div>
-            <div className="support-card" id="support-supply">
-              <div className="support-card-icon">
-                <TruckIcon />
-              </div>
-              <div className="support-card-content">
-                <h4>Supply Chain & Operations</h4>
-                <p>Reliable supply chain with regular deliveries, quality-controlled ingredients, and operational SOPs to keep your business running smoothly.</p>
-              </div>
-            </div>
-          </div>
-          <div className="section-cta-wrapper">
-            <button className="btn-primary" onClick={scrollToForm} id="support-cta">
-              Apply for Franchise Now <ArrowRight />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== TESTIMONIALS ====== */}
-      <section className="section section-alt" id="testimonials">
-        <div className="container">
-          <div style={{ textAlign: 'center' }}>
-            <span className="section-label">Franchise Partners</span>
-            <h2 className="heading-section">What Our Franchise Owners Say</h2>
-            <p className="section-desc" style={{ margin: '12px auto 0' }}>
-              Hear directly from franchise owners who made the decision to partner with Monginis.
-            </p>
-          </div>
-          <div className="testimonial-grid">
-            <div className="testimonial-card" id="testimonial-1">
-              <div className="testimonial-rating">
-                {[...Array(5)].map((_, i) => <StarIcon key={i} />)}
-              </div>
-              <p className="testimonial-text">
-                "I opened my Monginis store 3 years ago and broke even within 14 months. The brand recognition does half the selling for you. Customers walk in because they already trust Monginis."
-              </p>
-              <div className="testimonial-author">
-                <div className="testimonial-avatar">RK</div>
-                <div className="testimonial-info">
-                  <h5>Rajesh Kumar</h5>
-                  <span>Franchise Owner – Pune</span>
-                  <div className="testimonial-meta">
-                    <span>Store Opened: 2021</span>
-                    <span>Break-even: 14 Months</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="testimonial-card" id="testimonial-2">
-              <div className="testimonial-rating">
-                {[...Array(5)].map((_, i) => <StarIcon key={i} />)}
-              </div>
-              <p className="testimonial-text">
-                "The training and support from Monginis made it easy to start even though I had no bakery experience. Their supply chain is reliable and the margins on products are genuinely strong."
-              </p>
-              <div className="testimonial-author">
-                <div className="testimonial-avatar">PS</div>
-                <div className="testimonial-info">
-                  <h5>Priya Sharma</h5>
-                  <span>Franchise Owner – Jaipur</span>
-                  <div className="testimonial-meta">
-                    <span>Store Opened: 2022</span>
-                    <span>Break-even: 12 Months</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="testimonial-card" id="testimonial-3">
-              <div className="testimonial-rating">
-                {[...Array(5)].map((_, i) => <StarIcon key={i} />)}
-              </div>
-              <p className="testimonial-text">
-                "My store sees consistent daily footfall because of Monginis' product range. People come for cakes, but they also buy breads, pastries, and snacks. It's a complete bakery business."
-              </p>
-              <div className="testimonial-author">
-                <div className="testimonial-avatar">AV</div>
-                <div className="testimonial-info">
-                  <h5>Amit Verma</h5>
-                  <span>Franchise Owner – Lucknow</span>
-                  <div className="testimonial-meta">
-                    <span>Store Opened: 2020</span>
-                    <span>Break-even: 16 Months</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="section-cta-wrapper">
-            <button className="btn-primary" onClick={scrollToForm} id="testimonial-cta">
-              Join 700+ Franchise Partners <ArrowRight />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== PROCESS SECTION ====== */}
-      <section className="section" id="process">
-        <div className="container">
-          <div style={{ textAlign: 'center' }}>
-            <span className="section-label">How It Works</span>
-            <h2 className="heading-section">3 Simple Steps to Launch Your Franchise</h2>
-          </div>
-          <div className="process-steps">
-            <div className="process-step">
-              <div className="process-step-number">1</div>
-              <h4>Submit Your Inquiry</h4>
-              <p>Fill out the franchise application form with your details and preferred city. It takes less than 2 minutes.</p>
-            </div>
-            <div className="process-step">
-              <div className="process-step-number">2</div>
-              <h4>Discussion & Evaluation</h4>
-              <p>Our franchise team reviews your application, discusses investment details, and helps with location evaluation.</p>
-            </div>
-            <div className="process-step">
-              <div className="process-step-number">3</div>
-              <h4>Launch Your Store</h4>
-              <p>After agreement and setup, Monginis provides complete training and helps you launch your bakery successfully.</p>
-            </div>
-          </div>
-          <div className="section-cta-wrapper">
-            <button className="btn-primary btn-primary-large" onClick={scrollToForm} id="process-cta">
-              Start Step 1 — Apply Now <ArrowRight />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== FAQ SECTION ====== */}
-      <section className="section section-alt" id="faq">
-        <div className="container">
-          <div style={{ textAlign: 'center' }}>
-            <span className="section-label">Frequently Asked Questions</span>
-            <h2 className="heading-section">Common Questions About Monginis Franchise</h2>
-          </div>
-          <div className="faq-list">
-            <FaqItem
-              question="What is the minimum investment required?"
-              answer="The estimated investment for a Monginis franchise ranges from ₹10 Lakh to ₹20 Lakh, depending on the city, store size, and location. This covers setup, interiors, equipment, and initial inventory. Monginis offers one of the most accessible investment models in India's organized bakery sector."
-            />
-            <FaqItem
-              question="How long does it take to open a franchise?"
-              answer="From application approval to store launch, the typical timeline is 45 to 90 days. This includes site finalization, store setup, staff hiring, and training. Our franchise team works closely with you to ensure a smooth and timely launch."
-            />
-            <FaqItem
-              question="Do I need prior bakery experience?"
-              answer="No. Monginis provides complete training covering product handling, store operations, customer service, and hygiene standards. Many of our successful franchise owners come from non-bakery backgrounds. What matters is your commitment to running a business."
-            />
-            <FaqItem
-              question="What support does Monginis provide?"
-              answer="Monginis offers end-to-end support including site selection assistance, store design, staff training, marketing campaigns, supply chain management, and ongoing operational guidance. You are never on your own — our team is available at every stage."
-            />
-            <FaqItem
-              question="How do I apply and what happens next?"
-              answer="Fill the inquiry form on this page with your details. Our franchise team will review your application and contact you within 24 hours. After an initial discussion, we proceed with location evaluation, agreement, and store setup."
-            />
-          </div>
-          <div className="section-cta-wrapper">
-            <button className="btn-primary" onClick={scrollToForm} id="faq-cta">
-              Apply for Franchise Now
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== FINAL CTA BANNER ====== */}
-      <section className="final-cta" id="final-cta">
-        <div className="container">
-          <div className="final-cta-content">
-            <h2>Start Your Profitable Franchise Journey Today</h2>
-            <p>Join India's most trusted bakery brand.</p>
-            <button className="btn-primary btn-primary-large" onClick={scrollToForm} id="final-cta-btn">
-              Apply for Franchise Now
-            </button>
-            <p className="final-cta-subtext">Limited slots available in selected cities.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== FOOTER ====== */}
-      <footer className="footer" id="footer">
-        <div className="container">
-          <p>© 2026 Monginis Cake Shop Franchise India. All rights reserved. | <a href="https://monginisfranchises.co.in" target="_blank" rel="noopener noreferrer">monginisfranchises.co.in</a></p>
-        </div>
-      </footer>
-
-      {/* ====== STICKY BOTTOM BAR ====== */}
-      <div className={`sticky-bar ${showStickyBar ? 'visible' : ''}`} id="sticky-bar">
-        <div className="sticky-bar-inner">
-          <span className="sticky-bar-text">Ready to own a Monginis franchise?</span>
-          <button className="btn-primary" onClick={scrollToForm} id="sticky-bar-btn">
-            Apply for Franchise Now <ArrowRight />
-          </button>
+      {/* FLOATING FORM */}
+      <div className="form-float" ref={formRef} id="franchise-form">
+        <div className="form-card">
+          <h3>Get Franchise Brochure</h3>
+          <p className="form-sub">Fill this form to receive complete details</p>
+          <InquiryForm />
         </div>
       </div>
 
-      {/* ====== WHATSAPP BUTTON ====== */}
-      <a
-        href="https://wa.me/919999999999?text=I'm%20interested%20in%20Monginis%20Franchise"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="whatsapp-btn"
-        id="whatsapp-btn"
-        aria-label="Chat on WhatsApp"
-      >
-        <WhatsAppIcon />
-      </a>
+      {/* SVG DIVIDER */}
+      <div className="svg-divider">
+        <svg viewBox="0 0 1440 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 48h1440V16C1200 40 960 0 720 16S240 48 0 16v32z" fill="#fff" />
+        </svg>
+      </div>
 
-      {/* ====== EXIT INTENT POPUP ====== */}
-      <div className={`popup-overlay ${showPopup ? 'active' : ''}`} id="exit-popup" onClick={(e) => { if (e.target === e.currentTarget) setShowPopup(false); }}>
-        <div className="popup-card">
-          <button className="popup-close" onClick={() => setShowPopup(false)} id="popup-close-btn" aria-label="Close popup">
-            <XIcon />
-          </button>
-          <h3>Wait! Get the Franchise Brochure Before You Leave</h3>
-          <p>Enter your details and we'll send you the complete Monginis franchise information kit.</p>
-          <InquiryForm variant="popup" onSuccess={() => setTimeout(() => setShowPopup(false), 3000)} />
+      {/* METRICS */}
+      <section className="metrics">
+        <div className="container">
+          <div className="metrics-row stag">
+            <R className="metric"><p className="metric-num"><CountUp end={700} suffix="+" /></p><p className="metric-label">Cities</p></R>
+            <R className="metric"><p className="metric-num"><CountUp end={20} suffix="M+" /></p><p className="metric-label">Customers</p></R>
+            <R className="metric"><p className="metric-num"><CountUp end={18000} suffix="+" /></p><p className="metric-label">Pin Codes</p></R>
+            <R className="metric"><p className="metric-num"><CountUp end={65} suffix="+" /></p><p className="metric-label">Years Legacy</p></R>
+          </div>
+        </div>
+      </section>
+
+      {/* WHY INVEST — ALTERNATING */}
+      <section className="sec sec-alt" id="why-invest">
+        <div className="container">
+          <R style={{ textAlign: 'center', marginBottom: 56 }}>
+            <span className="sec-tag">Why Monginis</span>
+            <h2 className="sec-title">Why This Is a Smart Franchise Investment</h2>
+          </R>
+
+          <div className="why-block">
+            <R dir="left" className="why-text">
+              <h3>Low Investment, High Demand</h3>
+              <p>One of India's most accessible franchise models in the organized food sector. Bakery products are consumed daily — cakes, breads, snacks — ensuring consistent customer footfall and repeat revenue from day one.</p>
+              <a href="#franchise-form" className="why-link" onClick={(e) => { e.preventDefault(); goForm(); }}>Learn More →</a>
+            </R>
+            <R dir="right" className="why-img">
+              <img src="/images/storefront.jpg" alt="Monginis Store" />
+            </R>
+          </div>
+
+          <div className="why-block reverse">
+            <R dir="right" className="why-text">
+              <h3>65+ Years of Brand Recognition</h3>
+              <p>Monginis is a household name across 700+ cities. You don't need to build brand awareness — customers already know and trust the name. This built-in recognition translates directly to sales.</p>
+              <a href="#franchise-form" className="why-link" onClick={(e) => { e.preventDefault(); goForm(); }}>Learn More →</a>
+            </R>
+            <R dir="left" className="why-img">
+              <img src="/images/storefront2.jpg" alt="Monginis Products" />
+            </R>
+          </div>
+
+          <div className="why-block">
+            <R dir="left" className="why-text">
+              <h3>Complete Operational Support</h3>
+              <p>From site selection to staff training, from marketing materials to supply chain management — Monginis provides structured, end-to-end support so you can focus on growing your business.</p>
+              <a href="#franchise-form" className="why-link" onClick={(e) => { e.preventDefault(); goForm(); }}>Apply Now →</a>
+            </R>
+            <R dir="right" className="why-img">
+              <img src="/images/pastries.png" alt="Monginis Pastries" />
+            </R>
+          </div>
+        </div>
+      </section>
+
+      {/* PRODUCTS */}
+      <section className="sec" id="products">
+        <div className="container">
+          <R style={{ textAlign: 'center' }}>
+            <span className="sec-tag">Product Range</span>
+            <h2 className="sec-title">Products Your Customers Will Love</h2>
+          </R>
+          <div className="prod-grid stag">
+            {[
+              { img: '/images/cake.webp', n: 'Cakes' },
+              { img: '/images/snacks.jpg', n: 'Snacks' },
+              { img: '/images/pastries.png', n: 'Pastries' },
+              { img: '/images/breads.jpg', n: 'Breads & Buns' },
+              { img: '/images/chocolates.jpg', n: 'Chocolates' },
+              { img: '/images/beverages.jpg', n: 'Beverages' },
+            ].map((p, i) => (
+              <R className="prod-item" key={i}>
+                <img src={p.img} alt={p.n} />
+                <div className="prod-over"><span>{p.n}</span></div>
+              </R>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* INVESTMENT — DARK */}
+      <section className="sec invest-sec" id="investment">
+        <div className="container">
+          <R style={{ textAlign: 'center' }}>
+            <span className="sec-tag" style={{ color: 'rgba(255,255,255,0.4)' }}>Investment Overview</span>
+            <h2 className="sec-title" style={{ color: '#fff' }}>Clear Numbers, Confident Decision</h2>
+          </R>
+          <R>
+            <div className="invest-row">
+              <div className="invest-card">
+                <p className="invest-lbl">Estimated Investment</p>
+                <p className="invest-val"><CountUp end={10} suffix="L" /> – <CountUp end={20} suffix="L" /></p>
+                <p className="invest-sub">Setup, interiors, equipment & inventory</p>
+              </div>
+              <div className="invest-card">
+                <p className="invest-lbl">Expected ROI</p>
+                <p className="invest-val"><CountUp end={12} /> – <CountUp end={18} /> Mo</p>
+                <p className="invest-sub">Recover investment with daily sales</p>
+              </div>
+              <div className="invest-card">
+                <p className="invest-lbl">Profit Margins</p>
+                <p className="invest-val"><CountUp end={25} /> – <CountUp end={40} />%</p>
+                <p className="invest-sub">Strong margins on bakery products</p>
+              </div>
+            </div>
+            <p className="invest-note">Limited franchise slots available in selected cities.</p>
+          </R>
+          <div className="sec-cta" style={{ textAlign: 'center' }}>
+            <button className="btn btn-pink" onClick={goForm}>Check Availability in Your City</button>
+          </div>
+        </div>
+      </section>
+
+      {/* SUPPORT */}
+      <section className="sec sec-alt" id="support">
+        <div className="container">
+          <R>
+            <div className="support-grid">
+              <div className="support-left">
+                <span className="sec-tag">Franchise Support</span>
+                <h2 className="sec-title">We Support You at Every Step</h2>
+                <p className="sec-desc">Partnering with Monginis means structured, reliable operational support from finding the right location to running daily business.</p>
+                <div className="sec-cta"><button className="btn btn-pink" onClick={goForm}>Apply for Franchise</button></div>
+              </div>
+              <div className="sup-list">
+                <div className="sup-row"><div className="sup-ico"><MapPin /></div><div><h4>Site Selection</h4><p>We help identify locations with the right foot traffic and commercial potential.</p></div></div>
+                <div className="sup-row"><div className="sup-ico"><BookOpen /></div><div><h4>Staff Training</h4><p>Comprehensive training covering product handling, hygiene, and store management.</p></div></div>
+                <div className="sup-row"><div className="sup-ico"><Megaphone /></div><div><h4>Marketing Support</h4><p>National campaigns, local materials, seasonal promotions, and digital guidance.</p></div></div>
+                <div className="sup-row"><div className="sup-ico"><TruckIcon /></div><div><h4>Supply Chain</h4><p>Reliable deliveries, quality-controlled ingredients, and operational SOPs.</p></div></div>
+              </div>
+            </div>
+          </R>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="sec" id="testimonials">
+        <div className="container">
+          <R style={{ textAlign: 'center' }}>
+            <span className="sec-tag">Franchise Partners</span>
+            <h2 className="sec-title">What Our Franchise Owners Say</h2>
+          </R>
+          <div className="test-grid stag">
+            <R className="test-item">
+              <blockquote>"I broke even within 14 months. The brand recognition does half the selling — customers walk in because they already trust the name."</blockquote>
+              <h5>Rajesh Kumar</h5><p className="t-city">Franchise Owner – Pune</p>
+              <div className="test-meta"><span>Opened: 2021</span><span>Break-even: 14 Mo</span></div>
+            </R>
+            <R className="test-item">
+              <blockquote>"Starting with zero bakery experience, Monginis made it straightforward. The training was thorough and the supply chain is reliable."</blockquote>
+              <h5>Priya Sharma</h5><p className="t-city">Franchise Owner – Jaipur</p>
+              <div className="test-meta"><span>Opened: 2022</span><span>Break-even: 12 Mo</span></div>
+            </R>
+            <R className="test-item">
+              <blockquote>"Consistent daily footfall is the real advantage. People come for cakes but buy breads, pastries, and snacks too."</blockquote>
+              <h5>Amit Verma</h5><p className="t-city">Franchise Owner – Lucknow</p>
+              <div className="test-meta"><span>Opened: 2020</span><span>Break-even: 16 Mo</span></div>
+            </R>
+          </div>
+          <div className="sec-cta" style={{ textAlign: 'center' }}><button className="btn btn-pink" onClick={goForm}>Apply for Franchise</button></div>
+        </div>
+      </section>
+
+      {/* PROCESS */}
+      <section className="sec sec-alt" id="process">
+        <div className="container">
+          <R style={{ textAlign: 'center' }}>
+            <span className="sec-tag">How It Works</span>
+            <h2 className="sec-title">3 Steps to Launch Your Franchise</h2>
+          </R>
+          <div className="proc-row">
+            <div className="proc-step"><div className="proc-num">1</div><h4>Submit Inquiry</h4><p>Fill the form with your details. Takes under 2 minutes.</p></div>
+            <div className="proc-step"><div className="proc-num">2</div><h4>Evaluation & Discussion</h4><p>We review your application and evaluate the location.</p></div>
+            <div className="proc-step"><div className="proc-num">3</div><h4>Launch Store</h4><p>Complete training and launch your bakery successfully.</p></div>
+          </div>
+          <div className="sec-cta" style={{ textAlign: 'center' }}><button className="btn btn-pink" onClick={goForm}>Start Your Application</button></div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="sec" id="faq">
+        <div className="container">
+          <R style={{ textAlign: 'center' }}>
+            <span className="sec-tag">FAQ</span>
+            <h2 className="sec-title">Common Questions</h2>
+          </R>
+          <div className="faq-wrap">
+            <FaqItem q="What is the minimum investment required?" a="₹10 Lakh to ₹20 Lakh depending on city, store size, and location. Covers setup, interiors, equipment, and initial inventory." />
+            <FaqItem q="How long does it take to open a franchise?" a="45 to 90 days from approval to launch, including site finalization, store setup, hiring, and training." />
+            <FaqItem q="Do I need prior bakery experience?" a="No. Monginis provides complete training covering product handling, operations, customer service, and hygiene standards." />
+            <FaqItem q="What support does Monginis provide?" a="End-to-end support: site selection, store design, staff training, marketing, supply chain, and ongoing operational guidance." />
+            <FaqItem q="How do I apply?" a="Fill the inquiry form on this page. Our team reviews and contacts you within 24 hours to discuss next steps." />
+          </div>
+          <div className="sec-cta" style={{ textAlign: 'center' }}><button className="btn btn-pink" onClick={goForm}>Apply for Franchise</button></div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="final-cta">
+        <div className="container">
+          <R className="final-cta-in">
+            <h2>Start Your Monginis Franchise Journey Today</h2>
+            <p>Join India's most trusted bakery brand.</p>
+            <button className="btn btn-white-inv btn-lg btn-pulse" onClick={goForm}>Apply for Franchise Now</button>
+            <p className="sm-note">Limited opportunities available.</p>
+          </R>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <div className="container">
+          <div className="footer-grid">
+            <div>
+              <div className="footer-logo"><img src="/images/logo.png" alt="Monginis" /></div>
+              <p className="footer-tag">India's most loved bakery brand since 1956. A legacy of quality, celebration, and trust.</p>
+            </div>
+            <div className="footer-col">
+              <h4>Franchise Inquiry</h4>
+              <a href="tel:+919999999999">+91 99999 99999</a>
+              <a href="mailto:franchise@monginis.net">franchise@monginis.net</a>
+            </div>
+            <div className="footer-col">
+              <h4>Corporate Office</h4>
+              <p>1601, 16th Floor, Marathon Icon,<br />Off Ganpatrao Kadam Marg,<br />Lower Parel, Mumbai,<br />Maharashtra 400013</p>
+            </div>
+          </div>
+          <div className="footer-bottom">© 2026 Monginis Cake Shop Franchise India. All rights reserved.</div>
+        </div>
+      </footer>
+
+      {/* STICKY BAR */}
+      <div className={`sticky-bar${sticky ? ' show' : ''}`}>
+        <div className="sticky-in">
+          <span className="sticky-label">Ready to own a Monginis franchise?</span>
+          <button className="btn btn-pink" onClick={goForm}>Apply Now</button>
+        </div>
+      </div>
+
+      {/* WHATSAPP */}
+      <a href="https://wa.me/919999999999?text=I'm%20interested%20in%20Monginis%20Franchise" target="_blank" rel="noopener noreferrer" className="wa-btn" aria-label="WhatsApp"><WA /></a>
+
+      {/* EXIT POPUP */}
+      <div className={`pop-bg${popup ? ' on' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) setPopup(false); }}>
+        <div className="pop-card">
+          <button className="pop-x" onClick={() => setPopup(false)}><XIcon /></button>
+          <h3>Get the Franchise Brochure</h3>
+          <p>Enter your details for the complete information kit.</p>
+          <InquiryForm mini onDone={() => setTimeout(() => setPopup(false), 2500)} />
         </div>
       </div>
     </>
   );
 }
-
-export default App;
